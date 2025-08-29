@@ -27,10 +27,14 @@ pipeline {
             steps {
                 echo 'Deploying app...'
                 bat 'echo "Stopping any running apps..."'
-                bat 'taskkill /F /IM node.exe /T || echo "No node process to stop"'
+                bat 'taskkill /F /IM node.exe /T 2>nul || echo "No node process to stop"'
+                bat 'echo "Installing serve globally..."'
+                bat 'npm install -g serve'
                 bat 'echo "Starting app on port 4000..."'
-                bat 'start /B npx serve -s build -l 4000'
-                bat 'echo "App deployed at http://localhost:4000"'
+                bat 'start /B cmd /c "serve -s build -l 4000"'
+                bat 'echo "Waiting for app to start..."'
+                bat 'ping localhost -n 3 > nul'
+                bat 'echo "✅ App deployed successfully at http://localhost:4000"'
             }
         }
     }
