@@ -10,50 +10,78 @@ const App = () => {
 
   const questions = [
     {
-      question: "What is the capital of France?",
-      options: ["London", "Berlin", "Paris", "Madrid"],
-      correct: "Paris"
+      questionText: 'What is the capital of France?',
+      answerOptions: [
+        { answerText: 'Berlin', isCorrect: false },
+        { answerText: 'Madrid', isCorrect: false },
+        { answerText: 'Paris', isCorrect: true },
+        { answerText: 'Rome', isCorrect: false },
+      ],
     },
     {
-      question: "Which programming language is React built with?",
-      options: ["Python", "JavaScript", "Java", "C++"],
-      correct: "JavaScript"
+      questionText: 'Which planet is known as the Red Planet?',
+      answerOptions: [
+        { answerText: 'Venus', isCorrect: false },
+        { answerText: 'Mars', isCorrect: true },
+        { answerText: 'Jupiter', isCorrect: false },
+        { answerText: 'Saturn', isCorrect: false },
+      ],
     },
     {
-      question: "What does HTML stand for?",
-      options: ["Hypertext Markup Language", "Home Tool Markup Language", "Hyperlinks and Text Markup Language", "Hypertext Machine Language"],
-      correct: "Hypertext Markup Language"
+      questionText: 'What is 2 + 2?',
+      answerOptions: [
+        { answerText: '3', isCorrect: false },
+        { answerText: '4', isCorrect: true },
+        { answerText: '5', isCorrect: false },
+        { answerText: '6', isCorrect: false },
+      ],
     },
     {
-      question: "Which company developed React?",
-      options: ["Google", "Microsoft", "Facebook", "Amazon"],
-      correct: "Facebook"
+      questionText: 'Who painted the Mona Lisa?',
+      answerOptions: [
+        { answerText: 'Vincent van Gogh', isCorrect: false },
+        { answerText: 'Pablo Picasso', isCorrect: false },
+        { answerText: 'Leonardo da Vinci', isCorrect: true },
+        { answerText: 'Michelangelo', isCorrect: false },
+      ],
     },
     {
-      question: "What is the largest planet in our solar system?",
-      options: ["Earth", "Mars", "Jupiter", "Saturn"],
-      correct: "Jupiter"
-    }
+      questionText: 'What is the largest mammal?',
+      answerOptions: [
+        { answerText: 'Elephant', isCorrect: false },
+        { answerText: 'Blue Whale', isCorrect: true },
+        { answerText: 'Giraffe', isCorrect: false },
+        { answerText: 'Hippopotamus', isCorrect: false },
+      ],
+    },
   ];
 
-  const handleAnswerSelect = (answer) => {
-    setSelectedAnswer(answer);
-  };
+  const handleAnswerButtonClick = (isCorrect, answerText) => {
+    setSelectedAnswer(answerText);
 
-  const handleNextQuestion = () => {
-    const newAnswers = [...userAnswers, selectedAnswer];
-    setUserAnswers(newAnswers);
+    const newAnswer = {
+      question: questions[currentQuestion].questionText,
+      selectedAnswer: answerText,
+      correctAnswer: questions[currentQuestion].answerOptions.find(option => option.isCorrect).answerText,
+      isCorrect: isCorrect
+    };
 
-    if (selectedAnswer === questions[currentQuestion].correct) {
+    setUserAnswers([...userAnswers, newAnswer]);
+
+    if (isCorrect) {
       setScore(score + 1);
     }
 
     const nextQuestion = currentQuestion + 1;
     if (nextQuestion < questions.length) {
-      setCurrentQuestion(nextQuestion);
-      setSelectedAnswer('');
+      setTimeout(() => {
+        setCurrentQuestion(nextQuestion);
+        setSelectedAnswer('');
+      }, 1000);
     } else {
-      setShowScore(true);
+      setTimeout(() => {
+        setShowScore(true);
+      }, 1000);
     }
   };
 
@@ -67,100 +95,88 @@ const App = () => {
 
   const getScoreMessage = () => {
     const percentage = (score / questions.length) * 100;
-    if (percentage >= 80) return { message: "Excellent! 🏆", color: "#4CAF50" };
-    if (percentage >= 60) return { message: "Good Job! 👍", color: "#2196F3" };
-    if (percentage >= 40) return { message: "Not Bad! 📚", color: "#FF9800" };
-    return { message: "Keep Learning! 💪", color: "#F44336" };
+    if (percentage >= 80) return "Excellent! 🎉";
+    if (percentage >= 60) return "Good job! 👍";
+    if (percentage >= 40) return "Not bad! 📚";
+    return "Keep practicing! 💪";
   };
-
-  if (showScore) {
-    const scoreInfo = getScoreMessage();
-    return (
-      <div className="app">
-        <div className="quiz-container">
-          <div className="score-section">
-            <h2>Quiz Complete!</h2>
-            <div className="score-display" style={{ color: scoreInfo.color }}>
-              <div className="score-number">{score}/{questions.length}</div>
-              <div className="score-percentage">
-                {Math.round((score / questions.length) * 100)}%
-              </div>
-              <div className="score-message">{scoreInfo.message}</div>
-            </div>
-
-            <div className="results-review">
-              <h3>Review Your Answers:</h3>
-              {questions.map((q, index) => (
-                <div key={index} className="result-item">
-                  <p className="result-question">{index + 1}. {q.question}</p>
-                  <p className={`result-answer ${userAnswers[index] === q.correct ? 'correct' : 'incorrect'}`}>
-                    Your answer: {userAnswers[index] || 'No answer'}
-                    {userAnswers[index] !== q.correct && (
-                      <span className="correct-answer"> (Correct: {q.correct})</span>
-                    )}
-                  </p>
-                </div>
-              ))}
-            </div>
-
-            <button onClick={resetQuiz} className="restart-btn">
-              Take Quiz Again
-            </button>
-          </div>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="app">
       <div className="quiz-container">
         <div className="quiz-header">
-          <h1>Online Quiz Application</h1>
-          <div className="progress">
-            <div className="progress-bar">
-              <div
-                className="progress-fill"
-                style={{ width: `${((currentQuestion + 1) / questions.length) * 100}%` }}
-              ></div>
-            </div>
-            <span className="question-count">
-              Question {currentQuestion + 1} of {questions.length}
-            </span>
-          </div>
-        </div>
-
-        <div className="question-section">
-          <div className="question-count-top">
-            <span>Question {currentQuestion + 1}/{questions.length}</span>
-          </div>
-          <div className="question-text">
-            {questions[currentQuestion].question}
-          </div>
-        </div>
-
-        <div className="answer-section">
-          {questions[currentQuestion].options.map((option, index) => (
+          <h1>🧠 Online Quiz App</h1>
+          <div className="progress-bar">
             <div
-              key={index}
-              className={`answer-option ${selectedAnswer === option ? 'selected' : ''}`}
-              onClick={() => handleAnswerSelect(option)}
-            >
-              <div className="option-letter">{String.fromCharCode(65 + index)}</div>
-              <div className="option-text">{option}</div>
-            </div>
-          ))}
+              className="progress-fill"
+              style={{ width: `${((currentQuestion + (showScore ? 1 : 0)) / questions.length) * 100}%` }}
+            ></div>
+          </div>
         </div>
 
-        <div className="quiz-footer">
-          <button
-            onClick={handleNextQuestion}
-            disabled={!selectedAnswer}
-            className={`next-btn ${!selectedAnswer ? 'disabled' : ''}`}
-          >
-            {currentQuestion === questions.length - 1 ? 'Finish Quiz' : 'Next Question'}
-          </button>
-        </div>
+        {showScore ? (
+          <div className="score-section">
+            <div className="score-card">
+              <h2>{getScoreMessage()}</h2>
+              <div className="score-display">
+                <span className="score-number">{score}</span>
+                <span className="score-total">/ {questions.length}</span>
+              </div>
+              <p className="score-percentage">{Math.round((score / questions.length) * 100)}% Correct</p>
+
+              <div className="answer-review">
+                <h3>Review Your Answers:</h3>
+                {userAnswers.map((answer, index) => (
+                  <div key={index} className={`review-item ${answer.isCorrect ? 'correct' : 'incorrect'}`}>
+                    <div className="question-number">Q{index + 1}</div>
+                    <div className="review-content">
+                      <p className="review-question">{answer.question}</p>
+                      <p className="review-your-answer">
+                        Your answer: <span>{answer.selectedAnswer}</span>
+                      </p>
+                      {!answer.isCorrect && (
+                        <p className="review-correct-answer">
+                          Correct answer: <span>{answer.correctAnswer}</span>
+                        </p>
+                      )}
+                    </div>
+                    <div className="review-icon">
+                      {answer.isCorrect ? '✅' : '❌'}
+                    </div>
+                  </div>
+                ))}
+              </div>
+
+              <button className="restart-button" onClick={resetQuiz}>
+                🔄 Take Quiz Again
+              </button>
+            </div>
+          </div>
+        ) : (
+          <div className="question-section">
+            <div className="question-card">
+              <div className="question-count">
+                <span>Question {currentQuestion + 1}</span> / {questions.length}
+              </div>
+              <div className="question-text">
+                {questions[currentQuestion].questionText}
+              </div>
+              <div className="answer-section">
+                {questions[currentQuestion].answerOptions.map((answerOption, index) => (
+                  <button
+                    key={index}
+                    className={`answer-button ${selectedAnswer === answerOption.answerText ? 'selected' : ''}`}
+                    onClick={() => handleAnswerButtonClick(answerOption.isCorrect, answerOption.answerText)}
+                    disabled={selectedAnswer !== ''}
+                  >
+                    <span className="option-letter">{String.fromCharCode(65 + index)}</span>
+                    {answerOption.answerText}
+                  </button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
