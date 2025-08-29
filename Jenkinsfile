@@ -26,25 +26,21 @@ pipeline {
         stage('Deploy') {
             steps {
                 echo 'Deploying app...'
-                bat '''
-                    echo "Stopping any running apps..."
-                    taskkill /F /IM node.exe /T || echo "No node process to stop"
-                    timeout /t 2 /nobreak
-                    echo "Starting app on port 4000..."
-                    start /B npx serve -s build -l 4000
-                    echo "App deployed at http://localhost:4000"
-                '''
+                bat 'echo "Stopping any running apps..."'
+                bat 'taskkill /F /IM node.exe /T || echo "No node process to stop"'
+                bat 'echo "Starting app on port 4000..."'
+                bat 'start /B npx serve -s build -l 4000'
+                bat 'echo "App deployed at http://localhost:4000"'
             }
         }
     }
     
     post {
-        success {
-            echo 'Deployment successful! 🎉'
-            echo 'Your quiz app is running at http://localhost:4000'
+        always {
+            echo 'Pipeline completed!'
         }
-        failure {
-            echo 'Something went wrong! 😞'
+        success {
+            echo '🎉 Deploy successful! App running at http://localhost:4000'
         }
     }
 }
